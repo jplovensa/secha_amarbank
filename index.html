@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HomeGenie by SECHA | A Genie in Your Pocket</title>
+    
+    <!-- Fallback Font for Apple Stack -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            bg: '#000000',         /* Deep OLED Black */
+                            surface: '#1C1C1E',    /* iOS Dark Surface */
+                            surface2: '#2C2C2E',
+                            gold: '#E5C07B',       /* Soft Champagne Gold */
+                            teal: '#34D399',       /* Magical Glowing Teal */
+                            text: '#F5F5F7',       /* Apple Off-White */
+                            muted: '#86868B',      /* Apple standard muted text */
+                            border: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'vision-glass': '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.2)',
+                        'glow-gold': '0 0 60px rgba(229, 192, 123, 0.15)',
+                        'glow-teal': '0 0 60px rgba(52, 211, 153, 0.15)',
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'pulse-aurora': 'pulseAurora 8s ease-in-out infinite alternate',
+                        'siri-wave': 'siriWave 4s ease-in-out infinite alternate',
+                        'cinematic': 'cinematicZoom 30s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        pulseAurora: {
+                            '0%': { opacity: 0.2, transform: 'scale(0.9)' },
+                            '100%': { opacity: 0.5, transform: 'scale(1.1)' }
+                        },
+                        siriWave: {
+                            '0%': { transform: 'scale(0.9) rotate(0deg)', filter: 'hue-rotate(0deg) blur(20px)' },
+                            '100%': { transform: 'scale(1.1) rotate(10deg)', filter: 'hue-rotate(15deg) blur(30px)' }
+                        },
+                        cinematicZoom: {
+                            '0%': { transform: 'scale(1.0) translate(0, 0)' },
+                            '100%': { transform: 'scale(1.15) translate(-2%, -1%)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::selection { background-color: #E5C07B; color: #000000; }
+        
+        body[data-lang="en"] .lang-id { display: none !important; }
+        body[data-lang="id"] .lang-en { display: none !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Fixed body lock to prevent jumping to top */
+        .body-lock { overflow: hidden !important; touch-action: none; }
+
+        body { 
+            background-color: #000000; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: -0.015em; 
+        }
+
+        svg.lucide { stroke-width: 1.5px !important; }
+
+        /* --- VISION OS GLASSMORPHISM --- */
+        .glass-panel {
+            background: rgba(28, 28, 30, 0.45);
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
+        }
+
+        .glass-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.2);
+            border-color: rgba(229, 192, 123, 0.3);
+        }
+
+        /* --- APPLE-STYLE BUTTONS --- */
+        .btn-apple {
+            background: #FFFFFF; color: #000000; font-weight: 600;
+            border-radius: 9999px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .btn-apple:hover { background: #E5E5EA; transform: scale(1.03); }
+        .btn-apple:active { transform: scale(0.97); }
+
+        .btn-apple-glass {
+            background: rgba(255,255,255,0.1); color: #FFFFFF; font-weight: 500;
+            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 9999px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            cursor: pointer;
+        }
+        .btn-apple-glass:hover { background: rgba(255,255,255,0.15); border-color: rgba(229, 192, 123, 0.4); color: #E5C07B; transform: scale(1.03); }
+        .btn-apple-glass:active { transform: scale(0.97); }
+
+        /* --- CINEMATIC REVEALS & MOVEMENT --- */
+        .reveal-up { opacity: 0; transform: translateY(30px); transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal-up.active { opacity: 1; transform: translateY(0); }
+
+        /* --- DYNAMIC GLOWS --- */
+        .ambient-glow {
+            position: absolute; border-radius: 50%; filter: blur(100px); mix-blend-mode: screen; pointer-events: none;
+        }
+
+        /* --- PRELOADER --- */
+        #preloader { transition: opacity 0.8s ease-in-out, visibility 0.8s; }
+
+        /* Modal Transitions (Fixed to prevent stuck state) */
+        .modal-container { transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease; }
+        .modal-hidden { transform: scale(0.95) translateY(20px); opacity: 0; pointer-events: none; }
+        .modal-active { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+        
+        .step-panel { display: none; }
+        .step-panel.active { display: block; animation: stepFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes stepFadeIn { 
+            0% { opacity: 0; transform: translateX(20px); } 
+            100% { opacity: 1; transform: translateX(0); } 
+        }
+
+        /* Custom Radio Buttons Apple Style */
+        .custom-radio input:checked + div { border-color: #E5C07B; background-color: rgba(229, 192, 123, 0.15); }
+        .custom-radio input:checked + div .radio-dot { background-color: #E5C07B; }
+        
+        .custom-radio-teal input:checked + div { border-color: #34D399; background-color: rgba(52, 211, 153, 0.15); }
+        .custom-radio-teal input:checked + div .radio-dot { background-color: #34D399; }
+
+        /* Gamified Chat Box Siri-style */
+        .chat-bubble-enter { animation: bubbleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes bubbleIn { 0% { opacity: 0; transform: translateY(15px); filter: blur(4px); } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
+    </style>
+</head>
+<body class="bg-apple-bg text-apple-text antialiased overflow-x-hidden body-lock" data-lang="en">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-24 left-1/2 -translate-x-1/2 z-[500] flex flex-col gap-2 pointer-events-none w-[90%] max-w-sm"></div>
+
+    <!-- Apple-style Minimal Preloader -->
+    <div id="preloader" class="fixed inset-0 z-[200] bg-apple-bg flex flex-col items-center justify-center overflow-hidden">
+        
+        <!-- Moving Cinematic Background -->
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2500" class="w-full h-full object-cover opacity-20 filter blur-2xl animate-cinematic" alt="Ambient">
+            <div class="absolute inset-0 bg-black/50"></div>
+        </div>
+
+        <div class="ambient-glow bg-apple-gold/15 w-[50vw] h-[50vw] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse-aurora"></div>
+        
+        <div class="relative z-10 flex flex-col items-center text-center">
+            
+            <!-- Apple-Style Glass Diamond Logo -->
+            <div class="relative w-28 h-28 md:w-32 md:h-32 mb-8 rounded-[2.5rem] border border-white/10 bg-white/5 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] flex items-center justify-center animate-float-slow">
+                <div class="absolute inset-0 rounded-[2.5rem] bg-gradient-to-tr from-apple-gold/20 to-transparent opacity-50 blur-lg pointer-events-none"></div>
+                <svg viewBox="0 0 24 24" class="w-12 h-12 md:w-14 md:h-14 text-apple-gold drop-shadow-[0_0_15px_rgba(229,192,123,0.6)] relative z-10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 3h12l4 6-10 13L2 9Z" />
+                    <path d="M11 3 8 9l4 13 4-13-3-6" />
+                    <path d="M2 9h20" />
+                </svg>
+            </div>
+            
+            <h1 class="text-white font-semibold text-2xl tracking-tight mb-2">HomeGenie</h1>
+            <p class="text-apple-muted text-xs font-medium tracking-widest uppercase">
+                <span class="lang-en">Your wish, rendered.</span>
+                <span class="lang-id">Permintaan Anda, diwujudkan.</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Floating VisionOS Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-6 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="nav-pill" class="flex justify-between items-center transition-all duration-500 rounded-full px-4 py-3 border border-transparent">
+                
+                <a href="#" onclick="window.scrollTo(0,0); return false;" class="flex-shrink-0 flex items-center cursor-pointer group">
+                    <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center mr-3 bg-white/5 backdrop-blur-md group-hover:bg-white/10 group-hover:border-apple-gold/40 transition-colors">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4 text-white group-hover:text-apple-gold transition-colors" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 3h12l4 6-10 13L2 9Z" />
+                            <path d="M11 3 8 9l4 13 4-13-3-6" />
+                            <path d="M2 9h20" />
+                        </svg>
+                    </div>
+                    <span class="font-semibold text-white tracking-tight text-sm md:text-base">HomeGenie</span>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#interactive-genie" class="text-xs font-medium text-apple-muted hover:text-white transition-colors">
+                        <span class="lang-en">The Oracle</span><span class="lang-id">Sang Peramal</span>
+                    </a>
+                    <a href="#the-wishes" class="text-xs font-medium text-apple-muted hover:text-white transition-colors">
+                        <span class="lang-en">3 Wishes</span><span class="lang-id">3 Permintaan</span>
+                    </a>
+                    <a href="#financing" class="text-xs font-medium text-apple-muted hover:text-white transition-colors">
+                        <span class="lang-en">Capital</span><span class="lang-id">Modal</span>
+                    </a>
+                    
+                    <div class="flex items-center space-x-3 pl-6 border-l border-white/10">
+                        <button onclick="window.toggleLanguage()" class="text-[10px] font-semibold text-apple-muted hover:text-white transition-colors uppercase tracking-widest">
+                            EN <span class="text-white/20 mx-1">|</span> ID
+                        </button>
+                    </div>
+
+                    <button onclick="window.openSummonModal()" class="btn-apple px-6 py-2.5 text-xs">
+                        <span class="lang-en">Summon</span><span class="lang-id">Panggil</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center space-x-4">
+                    <button onclick="window.toggleMenu()" class="text-white w-10 h-10 flex items-center justify-center rounded-full glass-panel">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-4 right-4 mt-2 glass-panel rounded-3xl origin-top transform transition-all duration-500 scale-y-0 opacity-0 z-[60]">
+            <div class="px-6 py-8 space-y-4">
+                <a href="#interactive-genie" onclick="window.toggleMenu()" class="block text-sm font-medium text-white border-b border-white/10 pb-4">
+                    <span class="lang-en">The Oracle</span><span class="lang-id">Sang Peramal</span>
+                </a>
+                <a href="#the-wishes" onclick="window.toggleMenu()" class="block text-sm font-medium text-white border-b border-white/10 pb-4">
+                    <span class="lang-en">The 3 Wishes</span><span class="lang-id">3 Permintaan</span>
+                </a>
+                <a href="#financing" onclick="window.toggleMenu()" class="block text-sm font-medium text-white border-b border-white/10 pb-4">
+                    <span class="lang-en">Capital Financing</span><span class="lang-id">Pembiayaan Modal</span>
+                </a>
+                <button onclick="window.toggleLanguage()" class="block text-sm font-medium text-apple-muted pb-4 w-full text-left border-b border-white/10">
+                    Switch Language (EN/ID)
+                </button>
+                <button onclick="window.toggleMenu(); setTimeout(()=> window.openSummonModal(), 300);" class="w-full mt-4 btn-apple px-8 py-4 text-sm">
+                    <span class="lang-en">Summon Genie</span><span class="lang-id">Panggil Genie</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 3D Balinese Studio Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 pb-12 overflow-hidden bg-apple-bg">
+        
+        <!-- Premium 3D Real Estate Render Background (Moving) -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2500" alt="Aerial Resort Home" class="w-full h-full object-cover opacity-60 mix-blend-luminosity animate-cinematic">
+            
+            <!-- Sleek Gradient Overlays -->
+            <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+            
+            <!-- Magical Genie Glows (Balinese Amber & Mystic Teal) -->
+            <div class="ambient-glow bg-apple-gold/25 w-[50vw] h-[50vw] -top-[10vw] -left-[10vw] animate-pulse-aurora"></div>
+            <div class="ambient-glow bg-apple-teal/20 w-[60vw] h-[60vw] -bottom-[10vw] -right-[10vw] animate-pulse-aurora" style="animation-delay: -5s;"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+            <div class="max-w-4xl mx-auto text-center reveal-up active flex flex-col items-center">
+                
+                <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full glass-panel border border-white/20 text-[10px] font-semibold tracking-widest uppercase mb-8 text-white shadow-glow-gold">
+                    <svg viewBox="0 0 24 24" class="w-3 h-3 text-apple-gold" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 3h12l4 6-10 13L2 9Z" />
+                        <path d="M11 3 8 9l4 13 4-13-3-6" />
+                        <path d="M2 9h20" />
+                    </svg>
+                    <span class="lang-en">A Genie for Your Home</span>
+                    <span class="lang-id">Genie untuk Rumah Anda</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl lg:text-[7.5rem] font-medium text-white mb-6 tracking-tighter leading-[1.05] drop-shadow-xl">
+                    <span class="lang-en">Your Sanctuary, <br/>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-apple-gold via-[#FFD285] to-apple-gold">in a Pocket.</span>
+                    </span>
+                    <span class="lang-id">Hunian Anda, <br/>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-apple-gold via-[#FFD285] to-apple-gold">dalam Genggaman.</span>
+                    </span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-gray-300 mb-12 font-normal leading-relaxed max-w-2xl tracking-tight">
+                    <span class="lang-en">We seamlessly blend bespoke interior styling, turn-key installation, and instant financing into one magical, tap-to-execute architectural experience.</span>
+                    <span class="lang-id">Kami memadukan penataan interior kustom, instalasi terima beres, dan pembiayaan instan dalam satu pengalaman arsitektural yang magis.</span>
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center w-full sm:w-auto gap-4">
+                    <button onclick="window.openSummonModal()" class="w-full sm:w-auto btn-apple px-10 py-4 text-sm shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                        <span class="lang-en">Summon Genie</span><span class="lang-id">Panggil Genie</span>
+                    </button>
+                    
+                    <button onclick="window.openFriendModal()" class="w-full sm:w-auto btn-apple-glass px-10 py-4 text-sm flex items-center justify-center">
+                        <i data-lucide="smartphone" class="w-4 h-4 mr-2 text-apple-gold"></i>
+                        <span class="lang-en">Meet Your Companion</span><span class="lang-id">Temui Pendamping Anda</span> 
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW "BEST FRIEND" MODAL (Apple Presentation Style) -->
+    <div id="friend-modal" class="fixed inset-0 z-[300] opacity-0 pointer-events-none transition-opacity duration-400 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div id="friend-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-xl"></div>
+        
+        <div id="friend-container" class="relative glass-panel sm:rounded-[2.5rem] rounded-t-[2.5rem] w-full max-w-4xl shadow-vision-glass modal-hidden flex flex-col max-h-[90vh] overflow-hidden bg-[#1C1C1E]/80">
+            
+            <div class="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-apple-gold/15 to-transparent pointer-events-none"></div>
+
+            <div class="px-8 py-6 flex justify-end absolute top-0 right-0 w-full z-30 pointer-events-none">
+                <button id="close-friend-btn" class="text-white/60 hover:text-white transition-colors pointer-events-auto bg-black/40 p-2.5 rounded-full backdrop-blur-md">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto no-scrollbar flex-1 p-8 md:p-16 relative z-20 text-center flex flex-col items-center">
+                <div class="w-20 h-20 rounded-[1.5rem] bg-gradient-to-br from-apple-gold/20 to-apple-teal/20 border border-white/20 flex items-center justify-center mb-8 shadow-glow-gold backdrop-blur-md">
+                    <svg viewBox="0 0 24 24" class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 3h12l4 6-10 13L2 9Z" />
+                        <path d="M11 3 8 9l4 13 4-13-3-6" />
+                        <path d="M2 9h20" />
+                    </svg>
+                </div>
+                
+                <h3 class="text-3xl md:text-5xl font-semibold text-white mb-6 tracking-tight leading-tight">
+                    <span class="lang-en">Your Spatial <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-apple-gold to-[#FFF1C5]">Best Friend.</span></span>
+                    <span class="lang-id">Sahabat Ruang <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-apple-gold to-[#FFF1C5]">Terbaik Anda.</span></span>
+                </h3>
+                
+                <p class="text-apple-muted text-base md:text-lg leading-relaxed max-w-2xl mb-16 font-medium">
+                    <span class="lang-en">HomeGenie is designed to be your architectural companion. From translating your thoughts into breathtaking curation, to overseeing the flawless delivery and installation of your interiors, and unlocking the capital required to manifest it. It sits quietly in your pocket, ready to execute your move-in-ready dream.</span>
+                    <span class="lang-id">HomeGenie dirancang menjadi pendamping arsitektural Anda. Mulai dari menerjemahkan ide menjadi kurasi menakjubkan, mengawasi pengiriman dan instalasi interior Anda tanpa cela, hingga mencairkan modal untuk mewujudkannya. Selalu di genggaman Anda, siap mengeksekusi hunian impian.</span>
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left">
+                    <div class="p-8 rounded-[2rem] glass-card border-white/10 hover:border-apple-gold/40">
+                        <i data-lucide="brain-circuit" class="w-7 h-7 text-apple-gold mb-5"></i>
+                        <h4 class="text-white font-semibold mb-3 text-lg tracking-tight"><span class="lang-en">Absolute Understanding</span><span class="lang-id">Pemahaman Mutlak</span></h4>
+                        <p class="text-sm text-apple-muted leading-relaxed"><span class="lang-en">We decode your precise aesthetic and curate accordingly.</span><span class="lang-id">Kami mendekode estetika presisi Anda dan mengkurasinya.</span></p>
+                    </div>
+                    <div class="p-8 rounded-[2rem] glass-card border-white/10 hover:border-apple-gold/40">
+                        <i data-lucide="box" class="w-7 h-7 text-apple-gold mb-5"></i>
+                        <h4 class="text-white font-semibold mb-3 text-lg tracking-tight"><span class="lang-en">Flawless Execution</span><span class="lang-id">Eksekusi Sempurna</span></h4>
+                        <p class="text-sm text-apple-muted leading-relaxed"><span class="lang-en">We handle the procurement, delivery, and expert staging of your interiors.</span><span class="lang-id">Kami menangani pengadaan, pengiriman, dan penataan ahli interior Anda.</span></p>
+                    </div>
+                    <div class="p-8 rounded-[2rem] glass-card border-white/10 hover:border-apple-teal/50">
+                        <i data-lucide="landmark" class="w-7 h-7 text-apple-teal mb-5"></i>
+                        <h4 class="text-white font-semibold mb-3 text-lg tracking-tight"><span class="lang-en">Infinite Resource</span><span class="lang-id">Sumber Tanpa Batas</span></h4>
+                        <p class="text-sm text-apple-muted leading-relaxed"><span class="lang-en">Immediate liquidity to fund the sanctuary without compromise.</span><span class="lang-id">Likuiditas instan untuk mendanai hunian tanpa kompromi.</span></p>
+                    </div>
+                </div>
+
+                <button type="button" onclick="window.closeFriendModal(); setTimeout(() => window.openSummonModal(), 400);" class="mt-16 btn-apple px-12 py-4 text-sm shadow-glow-gold">
+                    <span class="lang-en">Summon Genie Now</span><span class="lang-id">Panggil Genie Sekarang</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Luxury Magical Apple-Siri Style Gamified Oracle Section -->
+    <section id="interactive-genie" class="py-32 relative bg-apple-bg overflow-hidden border-t border-white/5 flex items-center justify-center min-h-screen">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)]"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full flex flex-col items-center">
+            
+            <div class="text-center mb-16 reveal-up">
+                <h2 class="text-3xl md:text-5xl text-white font-medium tracking-tight mb-4">
+                    <span class="lang-en">Speak with <span class="text-apple-gold">HomeGenie.</span></span>
+                    <span class="lang-id">Bicara dengan <span class="text-apple-gold">HomeGenie.</span></span>
+                </h2>
+                <p class="text-apple-muted text-base">Your spatial intelligence assistant.</p>
+            </div>
+
+            <!-- Volumetric Siri-style Aura Orb -->
+            <div class="relative w-48 h-48 md:w-64 md:h-64 mb-14 reveal-up active flex items-center justify-center">
+                <!-- Glowing magical layers -->
+                <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-[#FFD285] to-[#E5C07B] opacity-40 blur-3xl animate-siri-wave mix-blend-screen"></div>
+                <div class="absolute inset-4 rounded-full bg-gradient-to-bl from-[#34D399] to-[#0D9488] opacity-50 blur-2xl animate-siri-wave mix-blend-screen" style="animation-direction: reverse; animation-duration: 5s;"></div>
+                
+                <!-- Core Glass Sphere featuring Apple-Style Diamond -->
+                <div class="relative z-10 w-20 h-20 bg-white/5 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-xl shadow-[0_0_40px_rgba(229,192,123,0.3),inset_0_0_20px_rgba(255,255,255,0.2)]">
+                    <svg viewBox="0 0 24 24" class="w-8 h-8 text-white drop-shadow-md" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 3h12l4 6-10 13L2 9Z" />
+                        <path d="M11 3 8 9l4 13 4-13-3-6" />
+                        <path d="M2 9h20" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Dialogue Text -->
+            <div class="text-center w-full max-w-2xl min-h-[120px] mb-12 reveal-up active" style="transition-delay: 100ms;">
+                <p id="genie-text" class="text-white text-2xl md:text-3xl font-medium leading-tight tracking-tight transition-opacity duration-300 chat-bubble-enter drop-shadow-lg">
+                    <!-- JS Injected Text -->
+                </p>
+            </div>
+            
+            <!-- Apple-Style Suggestion Pills -->
+            <div id="genie-options" class="flex flex-wrap gap-4 justify-center reveal-up active" style="transition-delay: 200ms;">
+                <!-- JS Injected Buttons -->
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- 3D Interactive Wishes Section -->
+    <section id="the-wishes" class="py-32 relative bg-apple-surface overflow-hidden border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20 reveal-up max-w-3xl mx-auto">
+                <h2 class="text-4xl md:text-6xl text-white font-medium tracking-tight mb-6">
+                    <span class="lang-en">Three Wishes, <br><span class="text-apple-gold">Granted.</span></span>
+                    <span class="lang-id">Tiga Permintaan, <br><span class="text-apple-gold">Dikabulkan.</span></span>
+                </h2>
+                <p class="text-apple-muted text-lg">A complete ecosystem to manifest your sanctuary.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 tilt-wrapper">
+                
+                <!-- Card 1 -->
+                <div class="glass-card tilt-card p-8 md:p-10 reveal-up flex flex-col h-full group">
+                    <div class="tilt-inner flex flex-col h-full">
+                        <div class="mb-6 w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-apple-gold/20 group-hover:border-apple-gold/50 transition-all duration-500 tilt-content-pop">
+                            <i data-lucide="palette" class="w-6 h-6 text-white group-hover:text-apple-gold"></i>
+                        </div>
+                        <h3 class="text-2xl font-semibold tracking-tight text-white mb-3 tilt-content-pop">
+                            <span class="lang-en">Bespoke Curation</span><span class="lang-id">Kurasi Estetika</span>
+                        </h3>
+                        <p class="text-apple-muted font-normal leading-relaxed text-sm flex-grow tilt-content-pop">
+                            <span class="lang-en">Based on your precise Style DNA, our artisans source and place premium furnishings, transforming stark architecture into a breathable home.</span>
+                            <span class="lang-id">Berdasarkan DNA Gaya Anda, desainer kami menata perabotan kustom premium. Mengubah arsitektur kaku menjadi hunian yang menakjubkan.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card tilt-card p-8 md:p-10 reveal-up flex flex-col h-full group" style="transition-delay: 100ms;">
+                    <div class="tilt-inner flex flex-col h-full">
+                        <div class="mb-6 w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-apple-gold/20 group-hover:border-apple-gold/50 transition-all duration-500 tilt-content-pop">
+                            <i data-lucide="box" class="w-6 h-6 text-white group-hover:text-apple-gold"></i>
+                        </div>
+                        <h3 class="text-2xl font-semibold tracking-tight text-white mb-3 tilt-content-pop">
+                            <span class="lang-en">Turn-Key Installation</span><span class="lang-id">Instalasi Terima Beres</span>
+                        </h3>
+                        <p class="text-apple-muted font-normal leading-relaxed text-sm flex-grow tilt-content-pop">
+                            <span class="lang-en">We manage the end-to-end delivery, assembly, and flawless staging of your new interiors. You simply turn the key and step into a fully realised home.</span>
+                            <span class="lang-id">Kami mengelola pengiriman, perakitan, dan penataan interior baru Anda secara menyeluruh. Anda cukup memutar kunci dan melangkah ke hunian yang siap ditempati.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card tilt-card p-8 md:p-10 reveal-up flex flex-col h-full group border-apple-teal/20" style="transition-delay: 200ms;">
+                    <div class="tilt-inner flex flex-col h-full">
+                        <div class="mb-6 w-14 h-14 rounded-2xl bg-apple-teal/10 flex items-center justify-center border border-apple-teal/30 group-hover:bg-apple-teal/30 group-hover:border-apple-teal/60 transition-all duration-500 tilt-content-pop shadow-glow-teal">
+                            <i data-lucide="wallet" class="w-6 h-6 text-apple-teal group-hover:text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-semibold tracking-tight text-white mb-3 tilt-content-pop">
+                            <span class="lang-en">Instant Liquidity</span><span class="lang-id">Kekuatan Modal</span>
+                        </h3>
+                        <p class="text-apple-muted font-normal leading-relaxed text-sm flex-grow tilt-content-pop">
+                            <span class="lang-en">Instant styling capital powered by Tunaiku. Unlock up to 30 Million IDR in collateral-free liquidity to fund your dream interior effortlessly.</span>
+                            <span class="lang-id">Likuiditas penataan instan dari Tunaiku. Cairkan hingga 30 Juta Rupiah tanpa agunan untuk mendanai interior impian Anda dengan mudah.</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Deep Amar Bank Tunaiku Integration -->
+    <section id="financing" class="py-32 bg-apple-bg relative border-y border-white/5 overflow-hidden">
+        <div class="ambient-glow bg-apple-teal/20 w-[60vw] h-[60vw] absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="glass-panel border-apple-teal/30 rounded-[3rem] p-8 md:p-16 shadow-glow-teal flex flex-col lg:flex-row items-center justify-between relative overflow-hidden bg-gradient-to-r from-transparent to-apple-teal/5 reveal-up">
+                
+                <div class="w-full lg:w-3/5 mb-12 lg:mb-0 relative z-10">
+                    <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full border border-apple-teal/40 bg-apple-teal/10 text-apple-teal text-[10px] font-bold uppercase tracking-widest mb-6">
+                        <i data-lucide="shield-check" class="w-3 h-3"></i>
+                        <span class="lang-en">Official Financial Partner</span>
+                        <span class="lang-id">Mitra Keuangan Resmi</span>
+                    </div>
+                    
+                    <h3 class="text-4xl md:text-5xl lg:text-6xl font-medium text-white mb-6 tracking-tight leading-tight">
+                        <span class="lang-en">Instant Capital up to <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-apple-teal to-[#6EE7B7]">30 Million IDR.</span></span>
+                        <span class="lang-id">Modal Instan hingga <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-apple-teal to-[#6EE7B7]">30 Juta Rupiah.</span></span>
+                    </h3>
+                    
+                    <p class="text-apple-muted text-lg leading-relaxed max-w-xl mb-8 font-medium">
+                        <span class="lang-en">Never compromise on your dream home. Powered by <strong class="text-white">Tunaiku by Amar Bank</strong>, we provide immediate, collateral-free capital strictly to fund your HomeGenie packages.</span>
+                        <span class="lang-id">Jangan pernah kompromi untuk rumah impian. Didukung oleh <strong class="text-white">Tunaiku dari Amar Bank</strong>, kami memberikan modal instan tanpa agunan untuk mendanai paket HomeGenie Anda.</span>
+                    </p>
+
+                    <div class="flex gap-6">
+                        <div class="flex items-center text-sm font-medium text-white">
+                            <i data-lucide="zap" class="w-4 h-4 text-apple-teal mr-2"></i> Fast Approval
+                        </div>
+                        <div class="flex items-center text-sm font-medium text-white">
+                            <i data-lucide="unlock" class="w-4 h-4 text-apple-teal mr-2"></i> Zero Collateral
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-1/3 flex flex-col items-center justify-center relative z-10 glass-card p-10 rounded-[2rem] border-apple-teal/20 bg-black/60">
+                    <div class="text-center mb-8">
+                        <div class="text-4xl font-bold tracking-tight text-white mb-1">tunaiku</div>
+                        <div class="text-[10px] uppercase tracking-widest text-apple-muted font-medium">by Amar Bank</div>
+                    </div>
+                    
+                    <button onclick="window.openSummonModal()" class="w-full py-4 rounded-full bg-apple-teal text-black font-semibold text-sm hover:bg-[#34D399] transition-colors shadow-[0_0_20px_rgba(52,211,153,0.3)]">
+                        <span class="lang-en">Unlock Financing</span>
+                        <span class="lang-id">Buka Pembiayaan</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- APPLE-STYLE BOTTOM SHEET MODAL (Summon Genie) -->
+    <div id="summon-modal" class="fixed inset-0 z-[400] opacity-0 pointer-events-none transition-opacity duration-400 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div id="summon-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
+        
+        <div id="summon-container" class="modal-container relative bg-[#1C1C1E] sm:rounded-3xl rounded-t-3xl w-full max-w-xl shadow-2xl modal-hidden flex flex-col max-h-[90vh] border border-white/10 overflow-hidden">
+            
+            <!-- Mobile Handle -->
+            <div class="w-full flex justify-center pt-3 pb-1 sm:hidden">
+                <div class="w-12 h-1.5 bg-white/20 rounded-full"></div>
+            </div>
+
+            <!-- Header -->
+            <div class="px-6 py-4 flex justify-between items-center relative z-20 border-b border-white/5 shrink-0">
+                <h3 class="font-semibold text-white text-lg tracking-tight">
+                    <span class="lang-en">Summon Genie</span><span class="lang-id">Panggil Genie</span>
+                </h3>
+                <button id="close-summon-btn" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Dynamic Body -->
+            <div class="overflow-y-auto no-scrollbar flex-1 p-6 md:p-8 relative z-20">
+                <form id="summon-form" class="h-full relative">
+                    
+                    <!-- Step 1 -->
+                    <div id="summon-step-1" class="step-panel active">
+                        <h4 class="text-xl font-medium text-white mb-6 tracking-tight">
+                            <span class="lang-en">Select your primary wish.</span><span class="lang-id">Pilih permintaan utama Anda.</span>
+                        </h4>
+                        <div class="space-y-3 mb-8">
+                            <label class="w-full flex items-center p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors custom-radio group relative">
+                                <input type="radio" name="wish" value="Full Styling & Turn-Key Installation" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                                <div class="w-5 h-5 rounded-full border border-apple-muted mr-4 flex items-center justify-center shrink-0 transition-colors relative z-0"><div class="radio-dot w-2.5 h-2.5 rounded-full transition-colors"></div></div>
+                                <span class="text-sm font-medium text-white relative z-0"><span class="lang-en">Complete Awakening (Styling & Installation)</span><span class="lang-id">Transformasi Penuh (Penataan & Instalasi)</span></span>
+                            </label>
+                            <label class="w-full flex items-center p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors custom-radio group relative">
+                                <input type="radio" name="wish" value="Bespoke Furnishing Only" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                                <div class="w-5 h-5 rounded-full border border-apple-muted mr-4 flex items-center justify-center shrink-0 transition-colors relative z-0"><div class="radio-dot w-2.5 h-2.5 rounded-full transition-colors"></div></div>
+                                <span class="text-sm font-medium text-white relative z-0"><span class="lang-en">Bespoke Curation Only</span><span class="lang-id">Hanya Penataan Perabotan</span></span>
+                            </label>
+                            <label class="w-full flex items-center p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors custom-radio group relative">
+                                <input type="radio" name="wish" value="Turn-Key Installation Only" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                                <div class="w-5 h-5 rounded-full border border-apple-muted mr-4 flex items-center justify-center shrink-0 transition-colors relative z-0"><div class="radio-dot w-2.5 h-2.5 rounded-full transition-colors"></div></div>
+                                <span class="text-sm font-medium text-white relative z-0"><span class="lang-en">Turn-Key Installation Only</span><span class="lang-id">Hanya Instalasi Terima Beres</span></span>
+                            </label>
+                        </div>
+                        <button type="button" onclick="window.nextSummonStep(1)" class="w-full btn-apple py-4 text-sm">
+                            <span class="lang-en">Continue</span><span class="lang-id">Lanjutkan</span>
+                        </button>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div id="summon-step-2" class="step-panel">
+                        <h4 class="text-xl font-medium text-white mb-6 tracking-tight">
+                            <span class="lang-en">Do you require financing?</span><span class="lang-id">Apakah Anda butuh pembiayaan?</span>
+                        </h4>
+                        <div class="space-y-3 mb-8">
+                            <label class="w-full flex items-center p-4 rounded-xl border border-apple-teal/30 bg-apple-teal/10 hover:bg-apple-teal/20 cursor-pointer transition-colors custom-radio-teal group relative">
+                                <input type="radio" name="finance" value="Yes - Assess Tunaiku" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                                <div class="w-5 h-5 rounded-full border border-apple-teal mr-4 flex items-center justify-center shrink-0 transition-colors relative z-0"><div class="radio-dot w-2.5 h-2.5 rounded-full transition-colors"></div></div>
+                                <span class="text-sm font-medium text-white relative z-0"><span class="lang-en">Yes, unlock 30M IDR with Tunaiku</span><span class="lang-id">Ya, buka 30 Juta IDR dengan Tunaiku</span></span>
+                            </label>
+                            <label class="w-full flex items-center p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors custom-radio group relative">
+                                <input type="radio" name="finance" value="No - Self Funded" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                                <div class="w-5 h-5 rounded-full border border-apple-muted mr-4 flex items-center justify-center shrink-0 transition-colors relative z-0"><div class="radio-dot w-2.5 h-2.5 rounded-full transition-colors"></div></div>
+                                <span class="text-sm font-medium text-white relative z-0"><span class="lang-en">No, I am self-funding</span><span class="lang-id">Tidak, pendanaan mandiri</span></span>
+                            </label>
+                        </div>
+                        <div class="flex gap-4">
+                            <button type="button" onclick="window.prevSummonStep(2)" class="w-1/3 py-4 rounded-full bg-white/10 text-white font-semibold text-sm hover:bg-white/20 transition-colors">
+                                <span class="lang-en">Back</span><span class="lang-id">Kembali</span>
+                            </button>
+                            <button type="button" onclick="window.nextSummonStep(2)" class="w-2/3 btn-apple py-4 text-sm">
+                                <span class="lang-en">Continue</span><span class="lang-id">Lanjutkan</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div id="summon-step-3" class="step-panel">
+                        <h4 class="text-xl font-medium text-white mb-6 tracking-tight">
+                            <span class="lang-en">Your Details.</span><span class="lang-id">Detail Anda.</span>
+                        </h4>
+                        <div class="space-y-4 mb-8">
+                            <input id="s-name" type="text" placeholder="Full Name" class="w-full px-4 py-4 bg-black/50 border border-white/10 rounded-xl text-white text-base focus:outline-none focus:border-white/40 transition-colors placeholder-apple-muted">
+                            <input id="s-phone" type="tel" placeholder="WhatsApp Number" class="w-full px-4 py-4 bg-black/50 border border-white/10 rounded-xl text-white text-base focus:outline-none focus:border-white/40 transition-colors placeholder-apple-muted">
+                            <input id="s-location" type="text" placeholder="City / Location" class="w-full px-4 py-4 bg-black/50 border border-white/10 rounded-xl text-white text-base focus:outline-none focus:border-white/40 transition-colors placeholder-apple-muted">
+                        </div>
+                        <div class="flex gap-4">
+                            <button type="button" onclick="window.prevSummonStep(3)" class="w-14 h-14 shrink-0 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors">
+                                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                            </button>
+                            <button type="submit" class="flex-grow btn-apple py-4 text-sm shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                                <span class="lang-en">Grant My Wishes</span><span class="lang-id">Kabulkan Permintaanku</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 pt-16 pb-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10">
+                <div class="flex items-center mb-6 md:mb-0">
+                    <svg viewBox="0 0 24 24" class="h-6 w-auto text-white mr-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 3h12l4 6-10 13L2 9Z" />
+                        <path d="M11 3 8 9l4 13 4-13-3-6" />
+                        <path d="M2 9h20" />
+                    </svg>
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-white tracking-tight text-sm">HomeGenie</span>
+                        <span class="text-[10px] text-apple-muted uppercase tracking-widest mt-1">By SECHA</span>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" onclick="window.scrollTo(0,0); return false;" class="text-xs font-medium text-apple-muted hover:text-white transition-colors">
+                        <span class="lang-en">Return to Top</span><span class="lang-id">Kembali ke Atas</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 text-center md:text-left text-xs text-apple-muted font-medium">
+                <p>&copy; <span id="current-year"></span> SECHA. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+        
+        const yearEl = document.getElementById('current-year');
+        if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+        // --- GLOBAL STATE & LANGUAGE ---
+        window.currentLang = 'en';
+        window.menuOpen = false;
+        window.currentDialogueNode = "start"; 
+
+        window.toggleLanguage = () => {
+            window.currentLang = window.currentLang === 'en' ? 'id' : 'en';
+            document.body.setAttribute('data-lang', window.currentLang);
+            window.renderGenieNode();
+        };
+
+        // --- SLEEK TOAST NOTIFICATION (REPLACES BROWSER ALERT) ---
+        window.showToast = (msg) => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            // Sleek Apple-style design
+            toast.className = 'bg-[#2C2C2E]/90 backdrop-blur-xl border border-white/10 text-white px-5 py-3.5 rounded-2xl shadow-2xl transform transition-all duration-300 opacity-0 translate-y-[-20px] font-medium text-sm flex items-center justify-center pointer-events-none';
+            toast.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-apple-gold mr-3"></i> ${msg}`;
+            container.appendChild(toast);
+            lucide.createIcons(); // Instatiate new icon
+            
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+                toast.classList.add('opacity-100', 'translate-y-0');
+            });
+            
+            // Animate out and remove
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
+        // --- PRELOADER LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const preloader = document.getElementById('preloader');
+            const hidePreloader = () => {
+                if (preloader) {
+                    preloader.style.opacity = '0';
+                    document.body.classList.remove('body-lock');
+                    setTimeout(() => { preloader.style.visibility = 'hidden'; }, 800);
+                }
+            };
+            setTimeout(hidePreloader, 2000); // Fast, sleek load
+        });
+
+        // --- NEW FRIEND MODAL LOGIC ---
+        const friendModal = document.getElementById('friend-modal');
+        const friendContainer = document.getElementById('friend-container');
+
+        window.openFriendModal = () => {
+            if(window.menuOpen) window.toggleMenu();
+            document.body.classList.add('body-lock');
+            friendModal.classList.remove('opacity-0', 'pointer-events-none');
+            // Give browser time to process display block before adding transform class
+            requestAnimationFrame(() => {
+                friendContainer.classList.remove('modal-hidden');
+                friendContainer.classList.add('modal-active');
+            });
+        };
+
+        window.closeFriendModal = () => {
+            document.body.classList.remove('body-lock');
+            friendContainer.classList.remove('modal-active');
+            friendContainer.classList.add('modal-hidden');
+            setTimeout(() => {
+                friendModal.classList.add('opacity-0', 'pointer-events-none');
+            }, 400); // Match CSS transition duration
+        };
+
+        document.getElementById('close-friend-btn').addEventListener('click', window.closeFriendModal);
+        document.getElementById('friend-backdrop').addEventListener('click', window.closeFriendModal);
+
+        // --- GAMIFIED APPLE-STYLE CHAT ---
+        const dialogueGraph = {
+            en: {
+                start: {
+                    text: "Hi. I'm HomeGenie. What does your space need to feel like a true sanctuary?",
+                    choices: [
+                        { text: "It's completely blank.", next: "design" },
+                        { text: "Furniture installation is a headache.", next: "logistics" },
+                        { text: "I need styling capital.", next: "liquidity" }
+                    ]
+                },
+                design: {
+                    text: "An empty canvas is perfect. Our curators will map your Style DNA and design every premium piece perfectly. Shall we proceed?",
+                    choices: [
+                        { text: "Yes, style my space.", next: "summon" },
+                        { text: "What about installation?", next: "logistics" }
+                    ]
+                },
+                logistics: {
+                    text: "A flawless handover is our signature. We manage the delivery, assembly, and precise staging of all your new furnishings. You simply arrive.",
+                    choices: [
+                        { text: "Execute the installation.", next: "summon" },
+                        { text: "I need styling first.", next: "design" }
+                    ]
+                },
+                liquidity: {
+                    text: "Capital shouldn't compromise design. Backed by Tunaiku, we unlock up to 30 Million IDR in collateral-free liquidity instantly.",
+                    choices: [
+                        { text: "Summon Genie", action: "openModal" },
+                        { text: "Tell me about styling.", next: "design" }
+                    ]
+                },
+                summon: {
+                    text: "Your wishes are ready to be executed. Let's begin the protocol.",
+                    choices: [
+                        { text: "Grant My Wishes", action: "openModal" },
+                        { text: "Start over", next: "start" }
+                    ]
+                }
+            },
+            id: {
+                start: {
+                    text: "Hai. Saya HomeGenie. Apa yang dibutuhkan ruang Anda untuk menjadi hunian impian?",
+                    choices: [
+                        { text: "Ruangan saya kosong.", next: "design" },
+                        { text: "Instalasi perabotan memusingkan.", next: "logistics" },
+                        { text: "Saya butuh modal.", next: "liquidity" }
+                    ]
+                },
+                design: {
+                    text: "Ruang kosong adalah peluang. Kurator kami akan memetakan DNA Gaya Anda dan mendesain setiap perabotan dengan sempurna. Lanjutkan?",
+                    choices: [
+                        { text: "Ya, tata ruang saya.", next: "summon" },
+                        { text: "Bagaimana dengan instalasinya?", next: "logistics" }
+                    ]
+                },
+                logistics: {
+                    text: "Serah terima tanpa celah adalah keahlian kami. Kami mengelola pengiriman, perakitan, dan penataan presisi semua perabotan baru Anda.",
+                    choices: [
+                        { text: "Eksekusi instalasinya.", next: "summon" },
+                        { text: "Saya butuh penataan gaya.", next: "design" }
+                    ]
+                },
+                liquidity: {
+                    text: "Modal tak seharusnya menghambat impian. Bersama Tunaiku, kami mencairkan hingga 30 Juta IDR tanpa agunan.",
+                    choices: [
+                        { text: "Panggil Genie", action: "openModal" },
+                        { text: "Jelaskan paket penataan.", next: "design" }
+                    ]
+                },
+                summon: {
+                    text: "Permintaan Anda siap dieksekusi. Mari kita selesaikan.",
+                    choices: [
+                        { text: "Kabulkan Permintaanku", action: "openModal" },
+                        { text: "Mulai dari awal", next: "start" }
+                    ]
+                }
+            }
+        };
+
+        window.renderGenieNode = () => {
+            const lang = window.currentLang || 'en';
+            const node = dialogueGraph[lang][window.currentDialogueNode];
+            const textBubble = document.getElementById('genie-text');
+            const choicesContainer = document.getElementById('genie-options');
+
+            if(textBubble) {
+                textBubble.style.opacity = '0';
+                textBubble.classList.remove('chat-bubble-enter');
+                setTimeout(() => {
+                    textBubble.textContent = node.text;
+                    textBubble.classList.add('chat-bubble-enter');
+                    textBubble.style.opacity = '1';
+                }, 300);
+            }
+
+            if(choicesContainer) {
+                choicesContainer.innerHTML = '';
+                node.choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    // Apple iMessage style response bubble
+                    btn.className = "px-5 py-2.5 rounded-2xl text-sm font-medium text-white bg-apple-surface2 border border-white/10 hover:bg-white hover:text-black transition-colors shadow-sm self-end";
+                    btn.textContent = choice.text;
+                    btn.onclick = () => {
+                        if(choice.next) {
+                            window.currentDialogueNode = choice.next;
+                            window.renderGenieNode();
+                        } else if(choice.action === "openModal") {
+                            window.openSummonModal();
+                        }
+                    };
+                    choicesContainer.appendChild(btn);
+                });
+            }
+        };
+        document.addEventListener('DOMContentLoaded', () => window.renderGenieNode());
+
+        // --- APPLE-STYLE MODAL LOGIC ---
+        const summonModal = document.getElementById('summon-modal');
+        const summonContainer = document.getElementById('summon-container');
+        
+        window.openSummonModal = () => {
+            if(window.menuOpen) window.toggleMenu();
+            document.body.classList.add('body-lock');
+            
+            // Completely reset the form to avoid stuck states from previous entries
+            document.getElementById('summon-form').reset();
+            
+            const steps = [1, 2, 3].map(i => document.getElementById(`summon-step-${i}`));
+            steps.forEach((s, idx) => {
+                if(!s) return;
+                if(idx === 0) s.classList.add('active');
+                else s.classList.remove('active');
+            });
+            
+            summonModal.classList.remove('opacity-0', 'pointer-events-none');
+            
+            // Use a short timeout instead of rAF for more consistent iOS display block rendering
+            setTimeout(() => {
+                summonContainer.classList.remove('modal-hidden');
+                summonContainer.classList.add('modal-active');
+            }, 10);
+        };
+
+        window.closeSummonModal = () => {
+            document.body.classList.remove('body-lock');
+            summonContainer.classList.remove('modal-active');
+            summonContainer.classList.add('modal-hidden');
+            setTimeout(() => {
+                summonModal.classList.add('opacity-0', 'pointer-events-none');
+            }, 400); // Matches transition duration precisely
+        };
+
+        document.getElementById('close-summon-btn').addEventListener('click', window.closeSummonModal);
+        document.getElementById('summon-backdrop').addEventListener('click', window.closeSummonModal);
+
+        window.nextSummonStep = (current) => {
+            if(current === 1) {
+                const wish = document.querySelector('input[name="wish"]:checked');
+                if(!wish) { 
+                    window.showToast(window.currentLang === 'en' ? 'Please select a wish to proceed.' : 'Silakan pilih permintaan Anda.'); 
+                    return; 
+                }
+            }
+            if(current === 2) {
+                const finance = document.querySelector('input[name="finance"]:checked');
+                if(!finance) { 
+                    window.showToast(window.currentLang === 'en' ? 'Please select a financing option.' : 'Silakan pilih opsi pembiayaan.'); 
+                    return; 
+                }
+            }
+
+            const currentPanel = document.getElementById(`summon-step-${current}`);
+            const nextPanel = document.getElementById(`summon-step-${current + 1}`);
+            
+            // Remove active directly to clear previous panel visually instantly, relies on CSS 'display: none'
+            currentPanel.classList.remove('active');
+            // Adding active instantly applies 'display: block' and kicks off keyframe animation seamlessly
+            nextPanel.classList.add('active');
+        };
+
+        window.prevSummonStep = (current) => {
+            const currentPanel = document.getElementById(`summon-step-${current}`);
+            const prevPanel = document.getElementById(`summon-step-${current - 1}`);
+            
+            currentPanel.classList.remove('active');
+            prevPanel.classList.add('active');
+        };
+
+        window.submitSummon = () => {
+            try {
+                const wishEl = document.querySelector('input[name="wish"]:checked');
+                const financeEl = document.querySelector('input[name="finance"]:checked');
+                
+                if(!wishEl || !financeEl) {
+                    window.showToast(window.currentLang === 'en' ? 'Incomplete selections. Please go back.' : 'Pilihan tidak lengkap. Harap kembali.');
+                    return;
+                }
+
+                const name = document.getElementById('s-name').value.trim();
+                const phone = document.getElementById('s-phone').value.trim();
+                const location = document.getElementById('s-location').value.trim();
+                
+                if(!name || !phone || !location) {
+                    window.showToast(window.currentLang === 'en' ? 'Please fill in all details.' : 'Harap lengkapi semua detail.');
+                    return;
+                }
+
+                const wish = wishEl.value;
+                const finance = financeEl.value;
+                
+                // Route user based on financing choice
+                if (finance === "Yes - Assess Tunaiku") {
+                    // Generate a unique identifier for the session/user using a timestamp and randomizer
+                    const identifierId = 'HG-' + Date.now() + Math.floor(Math.random() * 1000);
+                    const clientId = 'ebf-nadi-web';
+                    
+                    // Clean the phone number (removes spaces, dashes, leaving only numbers and +)
+                    const cleanPhone = phone.replace(/[^0-9+]/g, '');
+                    
+                    // Construct the dynamic Amar Bank staging URL
+                    const amarBankUrl = `https://staging-embedded-banking.amarbank.co.id/?client_id=${encodeURIComponent(clientId)}&phoneNumber=${encodeURIComponent(cleanPhone)}&id_identifier=${encodeURIComponent(identifierId)}`;
+                    
+                    // Open in a new tab! This prevents sandbox iframe crashing.
+                    window.open(amarBankUrl, '_blank');
+                } else {
+                    // Standard Self-Funded WhatsApp Routing
+                    let message = window.currentLang === 'en' 
+                        ? `*HOMEGENIE CONCIERGE*\n\nHello, I am ready to summon the concierge.\n\n*Name:* ${name}\n*WhatsApp:* ${phone}\n*Wish:* ${wish}\n*Financing (Tunaiku):* ${finance}\n*Location:* ${location}`
+                        : `*PRAMUTAMU HOMEGENIE*\n\nHalo, saya ingin memanggil pramutamu.\n\n*Nama:* ${name}\n*WhatsApp:* ${phone}\n*Permintaan:* ${wish}\n*Pembiayaan (Tunaiku):* ${finance}\n*Lokasi Properti:* ${location}`;
+
+                    window.open(`https://wa.me/6282174072041?text=${encodeURIComponent(message)}`, '_blank');
+                }
+                
+                window.closeSummonModal();
+            } catch (error) {
+                console.error("Submission Error:", error);
+                window.showToast("An error occurred processing your request.");
+            }
+        };
+
+        // Strict Form Submission Handler to prevent page reload
+        document.getElementById('summon-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Stop standard form submission completely
+            window.submitSummon();
+        });
+
+        // Prevent enter key from breaking the multi-step form before step 3
+        document.getElementById('summon-form').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (document.getElementById('summon-step-3').classList.contains('active')) {
+                    window.submitSummon();
+                }
+            }
+        });
+
+        // --- NAVBAR SCROLL ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('glass-panel');
+                navbar.classList.remove('bg-transparent', 'py-6');
+                navbar.classList.add('py-4');
+            } else {
+                navbar.classList.remove('glass-panel', 'py-4');
+                navbar.classList.add('bg-transparent', 'py-6');
+            }
+        });
+
+        // --- MOBILE MENU ---
+        const mobileMenu = document.getElementById('mobile-menu');
+        window.toggleMenu = () => {
+            window.menuOpen = !window.menuOpen;
+            if (window.menuOpen) {
+                mobileMenu.classList.remove('hidden');
+                requestAnimationFrame(() => { 
+                    mobileMenu.classList.remove('scale-y-0', 'opacity-0'); 
+                    mobileMenu.classList.add('scale-y-100', 'opacity-100'); 
+                });
+            } else {
+                mobileMenu.classList.remove('scale-y-100', 'opacity-100'); 
+                mobileMenu.classList.add('scale-y-0', 'opacity-0');
+                setTimeout(() => { mobileMenu.classList.add('hidden'); }, 400); // Wait for transition
+            }
+        };
+
+        // --- REVEAL ANIMATIONS ---
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal-up').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
