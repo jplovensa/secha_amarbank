@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HomeGenie by SECHA | A Genie in Your Pocket</title>
     
+    <!-- Google Tag Manager -->
+    <!-- ACTION REQUIRED: Replace 'GTM-XXXXXXX' with your actual GTM Container ID -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+    <!-- End Google Tag Manager -->
+
     <!-- Fallback Font for Apple Stack -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -168,6 +177,12 @@
     </style>
 </head>
 <body class="bg-apple-bg text-apple-text antialiased overflow-x-hidden body-lock" data-lang="en">
+
+    <!-- Google Tag Manager (noscript) -->
+    <!-- ACTION REQUIRED: Replace 'GTM-XXXXXXX' with your actual GTM Container ID -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-24 left-1/2 -translate-x-1/2 z-[500] flex flex-col gap-2 pointer-events-none w-[90%] max-w-sm"></div>
@@ -901,6 +916,12 @@
                 else s.classList.remove('active');
             });
             
+            // Track Modal Open
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                'event': 'summon_modal_opened'
+            });
+            
             summonModal.classList.remove('opacity-0', 'pointer-events-none');
             
             // Use a short timeout instead of rAF for more consistent iOS display block rendering
@@ -929,6 +950,13 @@
                     window.showToast(window.currentLang === 'en' ? 'Please select a wish to proceed.' : 'Silakan pilih permintaan Anda.'); 
                     return; 
                 }
+                
+                // Track Step 1 Completion
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'summon_step_1_completed',
+                    'wish_selected': wish.value
+                });
             }
             if(current === 2) {
                 const finance = document.querySelector('input[name="finance"]:checked');
@@ -936,6 +964,13 @@
                     window.showToast(window.currentLang === 'en' ? 'Please select a financing option.' : 'Silakan pilih opsi pembiayaan.'); 
                     return; 
                 }
+                
+                // Track Step 2 Completion
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'summon_step_2_completed',
+                    'financing_selected': finance.value
+                });
             }
 
             const currentPanel = document.getElementById(`summon-step-${current}`);
@@ -977,11 +1012,30 @@
                 const wish = wishEl.value;
                 const finance = financeEl.value;
                 
+                // --- ANALYTICS TRACKING SETUP ---
+                // Initialize dataLayer if it doesn't exist yet (Standard for GTM/GA4)
+                window.dataLayer = window.dataLayer || [];
+                
+                // Track the general lead submission
+                window.dataLayer.push({
+                    'event': 'homegenie_lead_submitted',
+                    'wish_selected': wish,
+                    'financing_selected': finance,
+                    'user_location': location
+                });
+                
                 // Route user based on financing choice
                 if (finance === "Yes - Assess Tunaiku") {
                     // Generate a unique identifier for the session/user using a timestamp and randomizer
                     const identifierId = 'HG-' + Date.now() + Math.floor(Math.random() * 1000);
-                    const clientId = 'ebf-nadi-web';
+                    const clientId = 'ebf-sechahome-web';
+                    
+                    // Track the specific Tunaiku outbound click with the matching ID
+                    window.dataLayer.push({
+                        'event': 'tunaiku_financing_clicked',
+                        'client_id': clientId,
+                        'id_identifier': identifierId
+                    });
                     
                     // Clean the phone number (removes spaces, dashes, leaving only numbers and +)
                     const cleanPhone = phone.replace(/[^0-9+]/g, '');
@@ -996,6 +1050,9 @@
                     let message = window.currentLang === 'en' 
                         ? `*HOMEGENIE CONCIERGE*\n\nHello, I am ready to summon the concierge.\n\n*Name:* ${name}\n*WhatsApp:* ${phone}\n*Wish:* ${wish}\n*Financing (Tunaiku):* ${finance}\n*Location:* ${location}`
                         : `*PRAMUTAMU HOMEGENIE*\n\nHalo, saya ingin memanggil pramutamu.\n\n*Nama:* ${name}\n*WhatsApp:* ${phone}\n*Permintaan:* ${wish}\n*Pembiayaan (Tunaiku):* ${finance}\n*Lokasi Properti:* ${location}`;
+
+                    // Track standard WhatsApp outbound
+                    window.dataLayer.push({ 'event': 'whatsapp_concierge_clicked' });
 
                     window.open(`https://wa.me/6282174072041?text=${encodeURIComponent(message)}`, '_blank');
                 }
